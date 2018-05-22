@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+// sync on chanels
+
+chan go, wait;
+
+</declaration>
+	<template>
+		<name x="5" y="5">Vehicle</name>
+		<declaration>// Place local declarations here.
+clock x;</declaration>
+		<location id="id0" x="-195" y="93">
+			<name x="-205" y="59">green_light</name>
+			<label kind="invariant" x="-205" y="110">x&lt;=30</label>
+		</location>
+		<location id="id1" x="-204" y="-170">
+			<name x="-214" y="-204">red_light</name>
+		</location>
+		<location id="id2" x="-501" y="-34">
+			<name x="-484" y="-59">begin</name>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-483" y="12">go!</label>
+			<label kind="assignment" x="-483" y="29">x=0</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<nail x="-204" y="-229"/>
+			<nail x="-493" y="-229"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-475" y="136">wait!</label>
+			<nail x="-195" y="153"/>
+			<nail x="-493" y="153"/>
+			<nail x="-501" y="-25"/>
+		</transition>
+	</template>
+	<template>
+		<name>Centre</name>
+		<location id="id3" x="-255" y="-42">
+			<name x="-265" y="-76">taken</name>
+		</location>
+		<location id="id4" x="-399" y="-34">
+			<name x="-409" y="-68">free</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-365" y="-102">wait?</label>
+			<nail x="-331" y="-76"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-365" y="0">go?</label>
+			<nail x="-331" y="0"/>
+		</transition>
+	</template>
+	<system>//Syeda Uneeza Fareed
+
+// Place template instantiations here.
+veh1 = Vehicle();
+veh2 = Vehicle();
+veh3 = Vehicle();
+veh4 = Vehicle();
+
+// List one or more processes to be composed into a system.
+system veh1, veh2, veh3, veh4, Centre;
+    </system>
+	<queries>
+		<query>
+			<formula>A[]  (veh1.green_light imply not (veh2.green_light &amp;&amp; veh3.green_light &amp;&amp; veh4.green_light))
+			</formula>
+			<comment>MutEx: Never (Not in any of the future states) it is the case that when vehicle 1 is going and any other vehicle is going too
+			</comment>
+		</query>
+		<query>
+			<formula>A[]  (veh2.green_light imply not (veh1.green_light &amp;&amp; veh3.green_light &amp;&amp; veh4.green_light))
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>A[]  (veh3.green_light imply not (veh2.green_light &amp;&amp; veh1.green_light &amp;&amp; veh4.green_light))
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>A[]  (veh4.green_light imply not (veh2.green_light &amp;&amp; veh3.green_light &amp;&amp; veh1.green_light))
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>A[] Centre.taken == (veh1.green_light || veh2.green_light || veh3.green_light || veh4.green_light)
+			</formula>
+			<comment>Whenever Centre is taken, one of the four vehicle can go forward.
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (veh1.green_light imply ( veh1.x&lt;=30) )
+			</formula>
+			<comment>there exists a state where vehicle1 can move provided x is less than 30
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (veh2.green_light imply (veh2.x&lt;=30) )
+			</formula>
+			<comment>there exists a state where vehicle2 can move provided x is less than 30
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (veh3.green_light imply (veh3.x&lt;=30) )
+			</formula>
+			<comment>there exists a state where vehicle3 can move provided x is less than 30
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (veh4.green_light imply (veh3.x&lt;=30) )
+			</formula>
+			<comment>there exists a state where vehicle4 can move provided x is less than 30
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; deadlock
+			</formula>
+			<comment>Does there exist any deadlock?
+			</comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock
+			</formula>
+			<comment>We are checking the possible deadlock here.
+			</comment>
+		</query>
+	</queries>
+</nta>
